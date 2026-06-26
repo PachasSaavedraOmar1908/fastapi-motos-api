@@ -4,8 +4,10 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, Depends, HTTPException
 from typing import Annotated
 from sqlmodel import Field,Session, create_engine, select, SQLModel
+from fastapi.staticfiles import StaticFiles
 
 load_dotenv();
+
 
 #Datos de conexión
 db_user = os.getenv('USER_DB')
@@ -34,9 +36,10 @@ class MotoBase(SQLModel):
     model: str = Field(index = True)
     brand: str = Field(index = True)
     cylinder: int = Field(index = True)
+    img: str = Field(index = True)
 
 class Moto(MotoBase, table = True):
-    id: int = Field(default = None, primary_key = True)
+    id: int = Field(default=None, primary_key=True)
     propietary: str
 
 class MotoPublic(MotoBase):
@@ -50,7 +53,8 @@ class MotoUpdate(MotoBase):
     brand: str | None = None
     cylinder: int | None = None
     propietary: str | None = None
-
+    img: str | None = None
+    
 app = FastAPI()
 
 @app.get("/")
@@ -58,6 +62,8 @@ def retornar_datos():
     return{
         
     }
+
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 @app.on_event('startup')
 def on_startup():
