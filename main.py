@@ -5,6 +5,7 @@ from fastapi import FastAPI, Depends, HTTPException
 from typing import Annotated
 from sqlmodel import Field,Session, create_engine, select, SQLModel
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 
 load_dotenv();
 
@@ -57,11 +58,17 @@ class MotoUpdate(MotoBase):
     
 app = FastAPI()
 
-@app.get("/")
-def retornar_datos():
-    return{
-        
-    }
+origins = [
+    "http://localhost:5173",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
